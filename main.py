@@ -20,14 +20,14 @@ def main():
         content = generate_content(item["text"])
         print(f"Contenido generado: {content}")
 
-        # Generar imagen localmente
-        local_image_path = generate_image_hf(content)
+        # Generar imagen (ahora devuelve los bytes de la imagen)
+        image_bytes = generate_image_hf(content)
 
         file_upload_id = None
-        if local_image_path:
-            print(f"Imagen generada en local: {local_image_path}")
+        if image_bytes:
+            print(f"Imagen generada en memoria ({len(image_bytes)} bytes)")
             # Subir imagen a Notion usando la API de File Uploads
-            file_upload_id = upload_file_to_notion(notion_api, local_image_path)
+            file_upload_id = upload_file_to_notion(notion_api, image_bytes)
 
         update_page_content(notion_api, item["id"], content, file_upload_id)
 

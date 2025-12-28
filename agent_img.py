@@ -16,11 +16,8 @@ def generate_image_hf(prompt):
         response = requests.post(api_url, headers=headers, json=payload)
 
         if response.status_code == 200:
-            image = Image.open(BytesIO(response.content))
-            file_name = "imagen_generada.png"
-            image.save(file_name)
-            print(f"Imagen guardada como: {file_name}")
-            return file_name
+            # Retornamos los bytes de la imagen directamente
+            return response.content
         else:
             print(
                 f"Error en Hugging Face API: {response.status_code} - {response.text}"
