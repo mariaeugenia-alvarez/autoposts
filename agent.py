@@ -1,9 +1,25 @@
-import random
+import os
 import requests
+from openai import OpenAI
 
 
 def generate_content(topic):
-    return random.randint(1, 1000)
+    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+    prompt = f"Escribe un frase de 5 palabras corta y atractivo sobre: {topic}"
+
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {
+                "role": "system",
+                "content": "Eres un experto creador de contenido para redes sociales.",
+            },
+            {"role": "user", "content": prompt},
+        ],
+    )
+
+    return response.choices[0].message.content
 
 
 def update_page_content(api_key, page_id, new_content):
