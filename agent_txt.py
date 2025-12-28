@@ -22,7 +22,7 @@ def generate_content(topic):
     return response.choices[0].message.content
 
 
-def update_page_content(api_key, page_id, new_content):
+def update_page_content(api_key, page_id, new_content, file_upload_id=None):
     url = f"https://api.notion.com/v1/pages/{page_id}"
 
     headers = {
@@ -31,11 +31,15 @@ def update_page_content(api_key, page_id, new_content):
         "Authorization": "Bearer " + api_key,
     }
 
-    data = {
-        "properties": {
-            "Contenido": {"rich_text": [{"text": {"content": str(new_content)}}]}
+    properties = {"Contenido": {"rich_text": [{"text": {"content": str(new_content)}}]}}
+
+    # Si tenemos un ID de archivo subido a Notion, lo usamos para la propiedad Imagen
+    if file_upload_id:
+        properties["Imagen"] = {
+            "files": [{"type": "file_upload", "file_upload": {"id": file_upload_id}}]
         }
-    }
+
+    data = {"properties": properties}
 
     response = requests.patch(url, headers=headers, json=data)
     return response.status_code == 200

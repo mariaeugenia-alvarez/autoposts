@@ -1,7 +1,9 @@
 import os
 from dotenv import load_dotenv
 from notion.client import get_notion_texts, update_page_status
-from agent import generate_content, update_page_content
+from agent_txt import generate_content, update_page_content
+from agent_img import generate_image_hf
+from notion_uploader import upload_file_to_notion
 
 
 def main():
@@ -18,7 +20,16 @@ def main():
         content = generate_content(item["text"])
         print(f"Contenido generado: {content}")
 
-        update_page_content(notion_api, item["id"], content)
+        # Generar imagen localmente
+        local_image_path = generate_image_hf(content)
+
+        file_upload_id = None
+        if local_image_path:
+            print(f"Imagen generada en local: {local_image_path}")
+            # Subir imagen a Notion usando la API de File Uploads
+            file_upload_id = upload_file_to_notion(notion_api, local_image_path)
+
+        update_page_content(notion_api, item["id"], content, file_upload_id)
 
         if update_page_status(notion_api, item["id"], "Borrador"):
             print("Estado actualizado a Borrador")
