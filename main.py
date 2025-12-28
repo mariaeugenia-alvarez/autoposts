@@ -20,9 +20,18 @@ def main():
     data = {"page_size": 10}
 
     response = requests.post(url, headers=headers, json=data)
-    # Ver respuesta
-    print(response.status_code)
-    print(response.json())
+
+    if response.status_code == 200:
+        for result in response.json().get("results", []):
+            rich_text_list = (
+                result.get("properties", {}).get("Texto", {}).get("rich_text", [])
+            )
+            full_text = "".join([item.get("plain_text", "") for item in rich_text_list])
+            if full_text:
+                print(full_text)
+    else:
+        print(response.status_code)
+        print(response.json())
 
 
 if __name__ == "__main__":
