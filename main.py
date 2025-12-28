@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 from notion.client import get_notion_texts, update_page_status
-from agent import generate_content
+from agent import generate_content, update_page_content
 
 
 def main():
@@ -17,6 +17,8 @@ def main():
 
         content = generate_content(item["text"])
         print(f"Contenido generado: {content}")
+
+        update_page_content(notion_api, item["id"], content)
 
         if update_page_status(notion_api, item["id"], "Borrador"):
             print("Estado actualizado a Borrador")

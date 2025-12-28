@@ -40,5 +40,3 @@ def update_page_status(api_key, page_id, new_status):
 
     response = requests.patch(url, headers=headers, json=data)
     return response.status_code == 200
-
-    return
