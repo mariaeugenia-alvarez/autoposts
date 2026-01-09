@@ -1,28 +1,23 @@
-import os
 import requests
-from openai import OpenAI
+from langchain_core.tools import tool
 
 
-def generate_content(topic):
-    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+@tool
+def update_page_content(
+    api_key: str, page_id: str, new_content: str, file_upload_id: str = None
+) -> bool:
+    """
+    Updates the content of a Notion page.
 
-    prompt = f"Escribe un frase de 5 palabras corta y atractivo sobre: {topic}"
+    Args:
+        api_key: The Notion API key.
+        page_id: The ID of the page to update.
+        new_content: The new text content for the page.
+        file_upload_id: Optional ID of an uploaded file to attach as an image.
 
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[
-            {
-                "role": "system",
-                "content": "Eres un experto creador de contenido para redes sociales.",
-            },
-            {"role": "user", "content": prompt},
-        ],
-    )
-
-    return response.choices[0].message.content
-
-
-def update_page_content(api_key, page_id, new_content, file_upload_id=None):
+    Returns:
+        True if the update was successful, False otherwise.
+    """
     url = f"https://api.notion.com/v1/pages/{page_id}"
 
     headers = {

@@ -1,4 +1,5 @@
 import requests
+from langchain_core.tools import tool
 
 
 def get_notion_texts(api_key, database_id):
@@ -27,7 +28,19 @@ def get_notion_texts(api_key, database_id):
         return []
 
 
-def update_page_status(api_key, page_id, new_status):
+@tool
+def update_page_status(api_key: str, page_id: str, new_status: str) -> bool:
+    """
+    Updates the status of a Notion page.
+
+    Args:
+        api_key: The Notion API key.
+        page_id: The ID of the page to update.
+        new_status: The new status name (e.g., "Borrador").
+
+    Returns:
+        True if the update was successful, False otherwise.
+    """
     url = f"https://api.notion.com/v1/pages/{page_id}"
 
     headers = {

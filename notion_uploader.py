@@ -1,8 +1,12 @@
+from langchain_core.tools import tool
 import requests
 import os
 
 
-def upload_file_to_notion(api_key, file_content, file_name="image.png"):
+@tool
+def upload_file_to_notion(
+    api_key: str, file_content: bytes, file_name: str = "image.png"
+) -> str:
     """
     Sube un archivo a Notion usando la API de File Uploads.
     Recibe el contenido del archivo en bytes.

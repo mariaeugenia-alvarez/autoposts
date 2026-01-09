@@ -1,28 +1,26 @@
 import os
-import requests
-from PIL import Image
-from io import BytesIO
+from huggingface_hub import InferenceClient
+from langchain_core.tools import tool
 
 
-def generate_image_hf(prompt):
+@tool
+def generate_image_hf(prompt: str) -> bytes:
+    """Generates an image using Hugging Face Inference API and returns the bytes."""
     api_key = os.getenv("HUGGINGFACE_API_KEY")
-    api_url = "https://router.huggingface.co/hf-inference/models/stabilityai/stable-diffusion-xl-base-1.0"
-
-    headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
-
-    payload = {"inputs": prompt, "options": {"wait_for_model": True}}
+    client = InferenceClient(token=api_key)
 
     try:
-        response = requests.post(api_url, headers=headers, json=payload)
+        # text-to-image returns a PIL Image by default in the python client
+        image = client.text_to_image(
+            prompt, model="stabilityai/stable-diffusion-xl-base-1.0"
+        )
 
-        if response.status_code == 200:
-            # Retornamos los bytes de la imagen directamente
-            return response.content
-        else:
-            print(
-                f"Error en Hugging Face API: {response.status_code} - {response.text}"
-            )
-            return None
+        # Convert PIL Image to bytes
+        import io
+
+        img_byte_arr = io.BytesIO()
+        image.save(img_byte_arr, format="PNG")
+        return img_byte_arr.getvalue()
 
     except Exception as e:
         print(f"Error generando imagen con Hugging Face: {e}")
